@@ -1,0 +1,20 @@
+{
+  "skill_name": "idd",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/idd\n\nAgentVillageプロジェクト（d:\\git\\AgentVillage）でIssue Driven Developmentを開始したい。doc/Ideas.mdからIssue一覧を表示して、どのIssueに取り組むか選べるようにしてほしい。",
+      "expected_output": "doc/Ideas.mdを読み込み、未実装IssueとTech-debtの一覧をフォーマットして表示し、番号入力を促す"
+    },
+    {
+      "id": 2,
+      "prompt": "/idd 37\n\nAgentVillageプロジェクト（d:\\git\\AgentVillage）でIssue #37（`build_system_prompt`のパラメータ過多）に取り組みたい。ブランチ名の提案から始めてほしい。",
+      "expected_output": "feature/issue-37-build-system-prompt-params などのブランチ名を提案し、確認を求める。承認後は gh issue view 37 でIssue詳細を取得し、設計を提示する"
+    },
+    {
+      "id": 3,
+      "prompt": "AgentVillageの開発をしたい。Issue #24のRole class refactoringをやりたいんだけど、設計から一緒に考えてほしい。",
+      "expected_output": "IDDフローを開始し、feature/issue-24-role-class-refactoring のブランチ名を提案→確認→設計提示（変更ファイル・判断ポイント）→承認待ちの流れになる"
+    }
+  ]
+}
