@@ -1,0 +1,23 @@
+{
+  "skill_name": "self-reflection-review",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "self-reflection-review して",
+      "expected_output": "src/ 全体をスキャンし、6つの観点（A〜F）で問題を洗い出した番号付きテーブルを出力する。各行に観点ID・問題・深刻度・なぜそうしたかが含まれる。",
+      "files": []
+    },
+    {
+      "id": 1,
+      "prompt": "src/engine/ だけ self-reflection-review して",
+      "expected_output": "src/engine/ 以下のファイルのみをスキャンし、同様の番号付きテーブルを出力する。スコープが engine に限定されていることが明示される。",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "エラーハンドリングの省略だけ洗い出して",
+      "expected_output": "観点D（エラーハンドリング省略）に絞って src/ を走査し、LLMレスポンス・ファイルI/O等の境界での検証漏れを列挙する。",
+      "files": []
+    }
+  ]
+}

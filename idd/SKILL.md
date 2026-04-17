@@ -77,6 +77,9 @@ gh issue create \
 作成後、`doc/Ideas.md` の適切なセクションに `❌` マークで追記する。
 `docs/add-issue-{番号}-to-ideas` ブランチを作成してコミットし、PR を作成する。
 
+> **⚠️ 注意**: Ideas.md 追記の PR 本文・コミットメッセージには `Closes #XX` / `Fixes #XX` を**絶対に書かない**。
+> GitHub がマージ時に Issue を自動クローズしてしまうため。`Related to #XX` も不要。Issue 番号への言及は一切しないこと。
+
 Issue番号を表示して完了。続けてそのIssueに取り組むか確認する:
 ```
 Issue #{番号} を作成しました。
