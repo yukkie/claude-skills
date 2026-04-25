@@ -551,6 +551,21 @@ Phase 3 で読んだ内容をもとに設計を整理して提示する:
   優先度に関わらず単体テストを必ずセットで実装する（`⚠️unit test mandatory`）**
 - テストの書き方・docstring規約・テストレベル定義は [`tests/TestStrategy.md`](../../../tests/TestStrategy.md) に従う
 
+### テスト docstring チェック
+
+新規追加・変更したテスト関数に以下の4要素が揃っているか確認する:
+
+```python
+"""
+SUT: {テスト対象の関数・クラス・メソッド名}
+Mock: {使用するMock/monkeypatchとその目的。なければ「なし」}
+Level: unit / integration / e2e
+Objective: このテストが何を検証するかを1文で記述する
+"""
+```
+
+欠けている場合は補完してから次へ進む。
+
 ### 実装完了後のチェック
 ```bash
 ruff check .
