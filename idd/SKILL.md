@@ -622,6 +622,17 @@ Closes #{番号}
 このPRを作成してよいですか？ [y/N]
 ```
 
+### Ideas.md の更新
+
+PR 作成前に、`doc/Ideas.md` の該当 Issue 行を削除してコミット・プッシュする（masterへの直接pushは禁止のため、feature ブランチ上でコミット）:
+```bash
+git add doc/Ideas.md
+git commit -m "docs: remove issue #{番号} from Ideas.md (completed)"
+git push
+```
+
+### PR 作成
+
 承認後:
 ```bash
 gh pr create \
@@ -630,19 +641,7 @@ gh pr create \
   --base master
 ```
 
-PR URL を表示する。
-
-### Ideas.md の更新
-
-PR 作成後、`doc/Ideas.md` の該当 Issue 行を削除する。
-この変更は現在の feature ブランチ上でコミットする（masterへの直接pushは禁止のため）:
-```bash
-git add doc/Ideas.md
-git commit -m "docs: remove issue #{番号} from Ideas.md (completed)"
-git push
-```
-
-完了。
+PR URL を表示する。完了。
 
 ---
 
