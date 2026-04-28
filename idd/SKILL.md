@@ -560,6 +560,28 @@ Phase 3 で読んだ内容をもとに設計を整理して提示する:
   優先度に関わらず単体テストを必ずセットで実装する（`⚠️unit test mandatory`）**
 - テストの書き方・docstring規約・テストレベル定義は [`tests/TestStrategy.md`](../../../tests/TestStrategy.md) に従う
 
+### AC 対応テストチェック
+
+テストを追加する前に、Issue の Acceptance Criteria を1件ずつ確認する:
+
+```bash
+gh issue view {番号} --repo yukkie/AgentVillage --json body --jq '.body'
+```
+
+各 AC 項目に対して「この条件を検証するテストが存在するか」を照合する。
+対応するテストがなければ、実装と合わせてテストを追加する。
+
+```
+## AC 対応テスト確認
+
+| AC | 対応テスト | 状態 |
+|---|---|---|
+| LLM prompts request reasoning field | test_xxx_prompt_includes_reasoning | ✅ |
+| Spectator log displays reasoning | test_renderer_vote_shows_reasoning | ❌ 追加が必要 |
+```
+
+未対応の AC があればテストを追加してから次へ進む。
+
 ### テスト docstring チェック
 
 新規追加・変更したテスト関数に以下の4要素が揃っているか確認する:
@@ -578,12 +600,38 @@ Objective: このテストが何を検証するかを1文で記述する
 ### 実装完了後のチェック
 ```bash
 ruff check .
-pytest
+pytest --cov=src --cov-report=term-missing
 ```
 
 エラーがあれば修正してから次のフェーズへ進む。
 
-コミットは実装完了・テスト通過後に行う:
+#### カバレッジ突合せ
+
+`pytest` 通過後、カバレッジレポートの `Missing` 行と今回の変更差分を突合せる:
+
+```bash
+git diff master...HEAD -- src/
+```
+
+差分に含まれる追加行（`+` で始まる実装行）が `Missing` に残っていないか確認する。
+
+- **カバーできる Missing があれば**: テスト実装に戻り、追加テストを書いてから再度チェックする
+- **カバーできない Missing がある場合**: 以下を整理してユーザーに提示し、承認を得てからコミットする
+
+```
+## カバレッジ確認結果
+
+### 追加テスト済み
+- {ファイル:行} — {テストした内容}
+
+### カバー不可（承認をお願いします）
+| ファイル:行 | 理由 |
+|---|---|
+| src/xxx.py:42 | E2E でしか通らないパス（LLM 実呼び出しが必要） |
+| src/yyy.py:87 | OS依存の例外パスで再現困難 |
+```
+
+コミットは実装完了・テスト通過・カバレッジ確認（または承認）後に行う:
 ```bash
 git add {変更ファイルを個別に指定}
 git commit -m "{コミットメッセージ}"
