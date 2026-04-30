@@ -74,7 +74,7 @@ gh issue create \
   --repo yukkie/AgentVillage
 ```
 
-作成後、`doc/Ideas.md` の適切なセクションに `❌` マークで追記する。
+作成後、`doc/Ideas.md` のリスト先頭に `❌` マークで追記する。
 `docs/add-issue-{番号}-to-ideas` ブランチを作成してコミットし、PR を作成する。
 
 > **⚠️ 注意**: Ideas.md 追記の PR 本文・コミットメッセージには `Closes #XX` / `Fixes #XX` を**絶対に書かない**。
@@ -430,20 +430,16 @@ Issue選択 → ブランチ作成 → ドキュメント確認 → 設計承認
 ```
 ## 取り組む Issue を選んでください
 
-### 未実装タスク
-| # | タイトル | 内容 |
-|---|---|---|
-| 21 | Day 2+ pre-night judgment phase | 昼開始前の判断フェーズを Day 2+ にも拡張 |
-...
-
-### 技術的負債 (tech-debt)
-| # | 優先度 | タイトル |
-|---|---|---|
-| 37 | 🟡 | `build_system_prompt` のパラメータ過多 |
+| # | 優先度 | ラベル | タイトル | 内容 |
+|---|---|---|---|---|
+| 37 | 🟡 | tech-debt | `build_system_prompt` のパラメータ過多 | パラメータを整理してシンプルに |
+| 21 | （なし） | enhancement | Day 2+ pre-night judgment phase | 昼開始前の判断フェーズを Day 2+ にも拡張 |
 ...
 
 番号を入力してください（例: 42）:
 ```
+
+tech-debt は表の先頭に並べる（同一優先度内でも tech-debt を上位に表示する）。
 
 ユーザーが番号を入力するまで待つ。
 
