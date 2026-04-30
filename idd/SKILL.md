@@ -699,6 +699,7 @@ PR の内容を以下のフォーマットで提示し、確認を取る:
 - [ ] {機能固有のテスト観点}
 
 Closes #{番号}
+（複数Issueをクローズする場合は各番号にキーワードを付ける: `Closes #203, closes #205`）
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 ---
