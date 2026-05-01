@@ -644,14 +644,19 @@ pytest --cov=src --cov-report=term-missing
 #### カバレッジ突合せ
 
 `pytest` 通過後、カバレッジレポートの `Missing` 行と今回の変更差分を突合せる。
-`scripts/coverage_diff.py` が存在する場合はそちらを使う（表を自動生成してくれる）:
+補助スクリプト `~/.claude/skills/idd/scripts/coverage_diff.py` を使う（表を自動生成してくれる）:
 
 ```bash
-# 補助スクリプトがある場合
-python scripts/coverage_diff.py
+SCRIPT="$HOME/.claude/skills/idd/scripts/coverage_diff.py"
 
-# ない場合は手動で突合せ
-git diff master...HEAD -- src/
+# coverage.json を生成（まだなければ）
+pytest --cov=src --cov-report=json -q
+
+# stage 前（未コミットの変更を確認）
+python "$SCRIPT" --unstaged
+
+# stage 後 / コミット後（master との差分を確認）
+python "$SCRIPT"
 ```
 
 差分に含まれる追加行（`+` で始まる実装行）が `Missing` に残っていないか確認する。

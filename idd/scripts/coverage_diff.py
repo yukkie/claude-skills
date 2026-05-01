@@ -54,7 +54,12 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--diff-file",
-        help="Read unified diff from a file instead of running git diff.",
+        help="Read unified diff from a file instead of running git diff. Use '-' to read from stdin.",
+    )
+    parser.add_argument(
+        "--unstaged",
+        action="store_true",
+        help="Diff unstaged working tree changes (runs 'git diff -- <pathspec>').",
     )
     parser.add_argument(
         "--base",
@@ -114,17 +119,22 @@ def normalize_path(path: str) -> str:
 
 def read_diff(args: argparse.Namespace) -> str:
     if args.diff_file:
+        if args.diff_file == "-":
+            return sys.stdin.read()
         with open(args.diff_file, encoding="utf-8") as handle:
             return handle.read()
 
-    revspec = args.revspec or f"{args.base}...{args.target}"
-    command = [
-        "git",
-        "diff",
-        revspec,
-        "--",
-        *args.pathspec,
-    ]
+    if args.unstaged:
+        command = ["git", "diff", "--", *args.pathspec]
+    else:
+        revspec = args.revspec or f"{args.base}...{args.target}"
+        command = [
+            "git",
+            "diff",
+            revspec,
+            "--",
+            *args.pathspec,
+        ]
     completed = subprocess.run(
         command,
         check=True,
