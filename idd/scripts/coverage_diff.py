@@ -241,7 +241,8 @@ def main() -> int:
             colored_lines.append(colorize_annotated_line(marker, line) + "\n")
             continue
         colored_lines.append(raw_line)
-    sys.stdout.write("".join(colored_lines))
+    output = "".join(colored_lines)
+    sys.stdout.buffer.write(output.encode("utf-8", errors="replace"))
     return 0
 
 
