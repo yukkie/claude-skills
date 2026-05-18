@@ -467,19 +467,34 @@ Issue のラベルに応じてプレフィックスを使い分ける:
 
 タイトルが長い場合は 4〜5 単語に収める。
 
-### 確認プロンプト
-```
-ブランチを作成します:
-  git checkout -b {prefix}issue-{番号}-{名前}
+### ブランチ作成手順
 
+#### 現在のブランチが `master` の場合
+
+確認なしで以下を実行する:
+```bash
+git pull --rebase origin master
+git checkout -b {prefix}issue-{番号}-{名前}
+```
+
+#### 現在のブランチが `master` 以外の場合
+
+以下を提示してユーザーに確認する:
+```
 現在のブランチ: {現在のブランチ}
-続けてよいですか？ [y/N]
+
+作業ブランチを作成するには master ベースが必要です。
+master に切り替えて pull しますか？ [y/N]
 ```
 
 承認後:
 ```bash
+git checkout master
+git pull --rebase origin master
 git checkout -b {prefix}issue-{番号}-{名前}
 ```
+
+拒否された場合は処理を中断し、ユーザーに手動で master へ切り替えるよう案内する。
 
 ---
 
