@@ -15,6 +15,55 @@
       "id": 3,
       "prompt": "AgentVillageの開発をしたい。Issue #24のRole class refactoringをやりたいんだけど、設計から一緒に考えてほしい。",
       "expected_output": "IDDフローを開始し、feature/issue-24-role-class-refactoring のブランチ名を提案→確認→設計提示（変更ファイル・判断ポイント）→承認待ちの流れになる"
+    },
+    {
+      "id": 4,
+      "prompt": "/idd 338\n\nAgentVillageのfrontend Issue #338（ゲーム一覧を実アーカイブに接続）に取り組む。ブランチ作成して設計まで進めてほしい。",
+      "expected_output": "JS/フロントエンド Issue と判断し、references/flow-js.md を参照する。Phase 3 では doc/Spec.md と doc/FrontendDesign.md を読み（Architecture.md / DetailDesign.md は読まない）、設計提示では frontend/src/ 配下のファイルを変更対象として列挙する",
+      "assertions": [
+        {
+          "name": "reads FrontendDesign not Architecture",
+          "description": "FrontendDesign.md を読む言及があり、Architecture.md / DetailDesign.md を読む言及がない"
+        },
+        {
+          "name": "mentions GameData.md update",
+          "description": "Phase 5 または実装後に doc/GameData.md へのギャップ記録を言及する"
+        },
+        {
+          "name": "targets frontend/src",
+          "description": "変更対象ファイルが frontend/src/ 配下として提示される"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "AgentVillageのfrontend実装で、parseIndexToGameList という純粋変換関数を実装しようとしている。テストはあとで書くつもりなんだけど、先に実装してもいい？",
+      "expected_output": "純粋関数であっても TDD ルール（先にテストを書いて RED を確認してから実装）の適用を求める。「あとでテストを書く」は認めない。",
+      "assertions": [
+        {
+          "name": "rejects impl-first for pure functions",
+          "description": "純粋関数でも先にテストを書くよう求める（実装先行を認めない）"
+        },
+        {
+          "name": "mentions RED confirmation",
+          "description": "RED を確認してから実装に入ることに言及する"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "/idd 37\n\nAgentVillageのPython Issue #37（build_system_promptのパラメータ過多）に取り組む。Phase 3のドキュメント確認をしてほしい。",
+      "expected_output": "Python Issue と判断し、references/flow-python.md を参照する。Phase 3 では doc/Spec.md / doc/Architecture.md / doc/DetailDesign.md を読む（FrontendDesign.md は読まない）",
+      "assertions": [
+        {
+          "name": "reads Architecture and DetailDesign",
+          "description": "Architecture.md と DetailDesign.md を読む言及がある"
+        },
+        {
+          "name": "does not read FrontendDesign",
+          "description": "FrontendDesign.md を読む言及がない"
+        }
+      ]
     }
   ]
 }
