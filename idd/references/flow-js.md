@@ -11,6 +11,7 @@ JS 側（`frontend/` 配下）の実装 Issue に適用する。
 gh issue view {番号} --repo yukkie/AgentVillage
 ```
 - `doc/Spec.md` — 何を作るか（ゲームルール・機能要件）
+- `doc/DataSpec.md` — データ契約の SSOT（EventType 一覧・可視性ルール・ログ／エージェント JSON スキーマ）。どのイベントを public モードで非表示にするか・viewerMode 別の文面択一などはここを必ず参照する
 - `doc/FrontendDesign.md` — フロントエンド設計（コンポーネント・CSS方針・スタブ差し替え計画）
 - Issue に関連する `frontend/src/` 配下の実装ファイル
 
