@@ -26,3 +26,4 @@ skills/
 
 - スキルファイルを編集したら必ずコミットする
 - コミットメッセージ形式: `feat(skills):` / `fix(skills):` / `docs(skills):`
+- コミットしたら `origin master` に直接 push してよい（このリポジトリは master 直 push を許可する。AgentVillage の「master 直 push 禁止」ルールとは別運用）
