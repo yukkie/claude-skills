@@ -2,6 +2,10 @@
 
 このディレクトリ (`~/.claude/skills/`) がスキルリポジトリのルートです。
 
+> **このディレクトリは git 管理されている**（リポジトリルートは `~/.claude/skills/`、remote: `yukkie/claude-skills`）。
+> 親の `~/.claude/` は git リポジトリではないので、`~/.claude/` で `git` を実行すると "not a repository" になる。
+> スキルファイルを編集したら、必ず `~/.claude/skills/` で `git` を実行してコミットすること。
+
 ## 構造
 
 各スキルは独自のサブディレクトリに格納されています:
