@@ -1,0 +1,26 @@
+{
+  "skill_name": "pr-review",
+  "evals": [
+    {
+      "id": 1,
+      "name": "multi-issue-ac-check",
+      "prompt": "https://github.com/yukkie/AgentVillage/pull/446 これレビューして頂戴",
+      "expected_output": "PR本文から closes #443 と #441 を両方抽出し、各 Issue の Acceptance Criteria を読んで1項目ずつ diff/テスト/DataSpec.md に照合し、✅/❌ と根拠 file:line を示す。correctness は /code-review に委譲する旨が分かる。最後に総評(LGTM等)。",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "no-issue-warning",
+      "prompt": "PR #428 をレビューして",
+      "expected_output": "PR #428 は本文に closes/fixes #N を持たない。Issue 参照が無いことを警告として明示し、PR単体レビューを続けるか対象Issueを教えてほしいとユーザーに確認する。無自覚にPR単体レビューへ進まない。",
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "implicit-review-request",
+      "prompt": "さっき出した PR、ちょっと見てもらえる? yukkie/AgentVillage の442番",
+      "expected_output": "曖昧な依頼でもスキルが発火し、PR #442 を取得して closes/fixes の Issue を引き、AC照合フローに入る。diffだけ見て終わらせない。",
+      "files": []
+    }
+  ]
+}
