@@ -19,7 +19,7 @@
     {
       "id": 4,
       "prompt": "/idd 338\n\nAgentVillageのfrontend Issue #338（ゲーム一覧を実アーカイブに接続）に取り組む。ブランチ作成して設計まで進めてほしい。",
-      "expected_output": "JS/フロントエンド Issue と判断し、references/flow-js.md を参照する。Phase 3 では doc/Spec.md と doc/FrontendDesign.md を読み（Architecture.md / DetailDesign.md は読まない）、設計提示では frontend/src/ 配下のファイルを変更対象として列挙する",
+      "expected_output": "JS/フロントエンド Issue と判断し、SKILL.md の Phase 3〜6 骨格に references/flow-js.md の言語固有差分を差し込んで進める。Phase 3 では（flow-js.md の「読むドキュメント」に従い）doc/Spec.md と doc/FrontendDesign.md を読み（Architecture.md / DetailDesign.md は読まない）、設計提示では frontend/src/ 配下のファイルを変更対象として列挙する",
       "assertions": [
         {
           "name": "reads FrontendDesign not Architecture",
@@ -64,39 +64,38 @@
           "description": "FrontendDesign.md を読む言及がない"
         }
       ]
-    }
-  ,
+    },
     {
       "id": 7,
-      "prompt": "/idd 266\n\nAgentVillageのPython Issue #266（intended_co をフラグからスケジュール済みイベント型に置き換え）に取り組む。Phase 3 のドキュメント確認まで進んでほしい。\n\n参考情報: doc/DetailDesign.md には intended_co が bool フラグとして定義されているが、src/domain/actor.py の ActorState には intended_co: str | None として実装されており、ドキュメントと実装がすでにズレている。",
-      "expected_output": "Phase 3 でドキュメントと実装のギャップを発見し、Phase 3.5 として設計改善提案（DetailDesign.md の記載修正）を自発的に提示する。「この設計変更を先に行いますか？」という確認を行う。",
+      "prompt": "/idd 266\n\nAgentVillageのPython Issue #266（intended_co をフラグからスケジュール済みイベント型に置き換え）に取り組む。Phase 3〜4 まで進んでほしい。\n\n参考情報: doc/DetailDesign.md には intended_co が bool フラグとして定義されているが、src/domain/actor.py の ActorState には intended_co: str | None として実装されており、ドキュメントと実装がすでにズレている。",
+      "expected_output": "Phase 4 の設計検討中にドキュメントと実装の命名・概念の不一致（スメル）を検知し、Phase 4.5（コードスメル対話）に入って『DetailDesign.md と実装のズレ』を提示し、どう対処するか（改善する/後回し/このまま進む）をユーザーに問う。改善方法を勝手に決めて実装しない。",
       "assertions": [
         {
-          "name": "triggers phase 3.5 unprompted",
-          "description": "ユーザーから明示的に言われていないのに Phase 3.5 の設計改善提案を自発的に提示する"
+          "name": "enters phase 4.5 on smell",
+          "description": "ドキュメントと実装の不一致をスメルとして検知し Phase 4.5 に入る"
         },
         {
           "name": "identifies doc-impl gap",
           "description": "DetailDesign.md の記述と src/ の実装のズレを具体的に指摘する"
         },
         {
-          "name": "asks for approval before proceeding",
-          "description": "「この設計変更を先に行いますか？」という確認を取る"
+          "name": "asks how to handle",
+          "description": "「改善する / 後回し / このまま進む」をユーザーに問う（改善方法を勝手に決めない）"
         }
       ]
     },
     {
       "id": 8,
-      "prompt": "/idd 23\n\nAgentVillageのIssue #23（Auto-summarize memory_summary）に取り組む。Phase 3 のドキュメント確認まで進んでほしい。\n\n参考情報: このIssueはメモリが長くなったら LLM で自動要約する機能追加。関係ないが、src/domain/roles.py の Role enum に未使用の定数が1つある。",
-      "expected_output": "Phase 3 でドキュメントと実装を確認するが、Issue と無関係な roles.py の未使用定数についての設計改善提案は行わない（スキップ条件「Issueと無関係な一般的な拡張性・移植性の改善」に該当）。Phase 3.5 を発火させずに Phase 4 へ進む。",
+      "prompt": "/idd 23\n\nAgentVillageのIssue #23（Auto-summarize memory_summary）に取り組む。Phase 3〜4 まで進んでほしい。\n\n参考情報: このIssueはメモリが長くなったら LLM で自動要約する機能追加。関係ないが、src/domain/roles.py の Role enum に未使用の定数が1つある。",
+      "expected_output": "Phase 4 の設計検討で、Issue #23 と無関係な roles.py の未使用定数については Phase 4.5 を発火させない（4.5 は今回の変更に関わるスメルのみ対象）。スメルなしと判断してそのまま Phase 4 の設計提示へ進む。",
       "assertions": [
         {
           "name": "does not propose unrelated improvements",
-          "description": "Issue #23 と無関係な roles.py の未使用定数について Phase 3.5 の提案を行わない"
+          "description": "Issue #23 と無関係な roles.py の未使用定数について Phase 4.5 を発火させない"
         },
         {
-          "name": "proceeds to phase 4 without 3.5",
-          "description": "Phase 3.5 をスキップして Phase 4 の設計提示に進む"
+          "name": "proceeds to phase 4 design without 4.5",
+          "description": "Phase 4.5 をスキップして Phase 4 の設計提示に進む"
         }
       ]
     }
