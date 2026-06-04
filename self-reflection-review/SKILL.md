@@ -33,7 +33,7 @@ GitHub Issue 化まで一気に行うスキル。
 [2] リスト提示        — 番号付き表でユーザーに提示
 [3] ユーザーレビュー  — 修正・削除・追記を受け付ける（確定まで繰り返し）
 [3.5] 重複チェック   — doc/Ideas.md と照合し、重複・部分重複・新規を仕分ける
-[4] Issue 登録        — gh issue create で一括登録
+[4] Issue 登録        — gh-mcp ツールで一括登録
 [5] Ideas.md 更新     — コミット & PR 作成を提案
 ```
 
@@ -218,12 +218,14 @@ Issue 登録前に `doc/Ideas.md` を読み、既存 Issue との重複を確認
 - [ ] ruff check . と pytest がパスすること
 ```
 
-```bash
-gh issue create \
-  --title "{問題の簡潔な英語タイトル（50文字以内）}" \
-  --body "..." \
-  --label "tech-debt" \
-  --repo yukkie/AgentVillage
+各 Issue は `mcp__gh-mcp__gh_issue_create` ツールで登録する（長文 body をシェル経由で渡さない）:
+```
+mcp__gh-mcp__gh_issue_create(
+  repo="yukkie/AgentVillage",
+  title="{問題の簡潔な英語タイトル（50文字以内）}",
+  body="...",
+  labels=["tech-debt"],
+)
 ```
 
 全件登録後にサマリーを表示する：
@@ -238,4 +240,4 @@ gh issue create \
 ## Phase 5 — Ideas.md 更新
 
 全件登録後、`doc/Ideas.md` の tech-debt セクションへの追記を提案する。
-承認されたら `docs/self-reflection-review-{YYYYMMDD}` ブランチを作成してコミット & PR を出す。
+承認されたら `docs/self-reflection-review-{YYYYMMDD}` ブランチを作成してコミットし、push 後に `mcp__gh-mcp__gh_pr_create(base="master", title="...", body="...")` で PR を出す。

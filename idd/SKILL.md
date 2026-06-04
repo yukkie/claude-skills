@@ -235,7 +235,7 @@ Phase 3 の現状報告をもとに設計を考える。設計を考える過程
 ### 関連 Issue（重複・依存）
 設計中に「この変更で別 Issue の AC も満たされる」「この Issue が先決」などの関係に気づいた場合:
 - 関係する Issue を列挙する
-- 設計承認後、実装前に **各 Issue にコメントで関係性を記載する**（例: `gh issue comment`）
+- 設計承認後、実装前に **各 Issue にコメントで関係性を記載する**（`mcp__gh-mcp__gh_issue_comment` ツール）
   - 依存先 Issue: 「#XX の実装により本 Issue も解消される。PR #YY 参照」
   - 同時クローズされる Issue: 「#XX, #ZZ とともに PR #YY でクローズ。理由: ...」
 
@@ -256,9 +256,9 @@ Phase 3 の現状報告をもとに設計を考える。設計を考える過程
 ```
 
 - **N** — そのまま Phase 5 へ進む（従来どおり）。
-- **y** — 承認済み設計を対象 Issue にコメント投稿し、外部の目に晒す:
-  ```bash
-  gh issue comment {番号} --repo yukkie/AgentVillage --body "..."
+- **y** — 承認済み設計を対象 Issue にコメント投稿し、外部の目に晒す（長文 body をシェルに渡さないため `mcp__gh-mcp__gh_issue_comment` ツールを使う）:
+  ```
+  mcp__gh-mcp__gh_issue_comment(repo="yukkie/AgentVillage", number={番号}, body="...")
   ```
   本文には Phase 4 で承認された設計（変更対象ファイル・変更内容・判断ポイント・影響範囲）をそのまま載せる。宛先は固定しない — 可視な場所に設計を置くことでレビュー可能にするのが目的。
 
@@ -460,15 +460,16 @@ git push
 
 ### PR 作成
 
-承認後:
-```bash
-gh pr create \
-  --title "{タイトル}" \
-  --body "..." \
-  --base master
+承認後、`mcp__gh-mcp__gh_pr_create` ツールで PR を作成する（長文 body をシェル経由で渡さない。現在ブランチは push 済みである必要がある）:
+```
+mcp__gh-mcp__gh_pr_create(
+  base="master",
+  title="{タイトル}",
+  body="...",
+)
 ```
 
-PR URL を表示する。
+返り値の `url`（= PR URL）を表示する。
 
 PR 作成後、**PR レビュー指摘**を受けたら、その指摘が当初 AC の範囲内かを確認する。当初 AC になかった要求が含まれる場合は下の「スコープ拡張ゲート（横断）」へ進む。
 
@@ -522,7 +523,7 @@ PR 作成後、**PR レビュー指摘**を受けたら、その指摘が当初 
 
 「取り込む」を選んだ場合の手順（**この順序を守る**）:
 
-1. **AC 更新** — 上記の AC 案で Issue 本文を更新する（`gh issue edit {番号} --body ... --repo yukkie/AgentVillage`）
+1. **AC 更新** — 上記の AC 案で Issue 本文を更新する（`mcp__gh-mcp__gh_issue_edit(repo="yukkie/AgentVillage", number={番号}, body="...")`）
 2. **contract テスト設計** — 追加 AC に対応する contract テストを設計・追加する。`references/flow-*.md` の「Contract テストの TDD ルール」に従い、**RED を確認してから実装**する
 3. **境界ケース列挙** — 追加 AC と既存テストの**組み合わせ境界**を列挙し、漏れを確認する（「新 AC が既存条件と交差する点」を洗い出す）
 
