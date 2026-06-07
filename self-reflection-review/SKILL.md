@@ -218,10 +218,12 @@ Issue 登録前に `doc/Ideas.md` を読み、既存 Issue との重複を確認
 - [ ] ruff check . と pytest がパスすること
 ```
 
-各 Issue は `mcp__gh-mcp__gh_issue_create` ツールで登録する（長文 body をシェル経由で渡さない）:
+各 Issue は `mcp__plugin_github_github__issue_write` ツールで登録する（長文 body をシェル経由で渡さない）:
 ```
-mcp__gh-mcp__gh_issue_create(
-  repo="yukkie/AgentVillage",
+mcp__plugin_github_github__issue_write(
+  method="create",
+  owner="yukkie",
+  repo="AgentVillage",
   title="{問題の簡潔な英語タイトル（50文字以内）}",
   body="...",
   labels=["tech-debt"],
@@ -240,4 +242,4 @@ mcp__gh-mcp__gh_issue_create(
 ## Phase 5 — Ideas.md 更新
 
 全件登録後、`doc/Ideas.md` の tech-debt セクションへの追記を提案する。
-承認されたら `docs/self-reflection-review-{YYYYMMDD}` ブランチを作成してコミットし、push 後に `mcp__gh-mcp__gh_pr_create(base="master", title="...", body="...")` で PR を出す。
+承認されたら `docs/self-reflection-review-{YYYYMMDD}` ブランチを作成してコミットし、push 後に `mcp__plugin_github_github__create_pull_request(owner="yukkie", repo="AgentVillage", head="docs/self-reflection-review-{YYYYMMDD}", base="master", title="...", body="...")` で PR を出す。
