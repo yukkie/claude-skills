@@ -18,6 +18,28 @@ Python 側（`src/` 配下）の実装 Issue に適用する。Phase 3〜6 の**
 
 ---
 
+## Phase 4 AC ↔ Contract テスト対応（Python 固有）
+
+### 識別子の記法と種別プレフィックス
+
+識別子はテスト関数名を**そのまま** `ファイル名::関数名` 形式で書く（実装時に一字一句このまま使う）。種別プレフィックス:
+
+| プレフィックス | 対象 | 例 |
+|---|---|---|
+| `unit:` | 純粋ロジック・ドメイン関数（Mock なし or 最小） | `unit: tests/test_feed.py::test_filter_by_agents_empty_returns_all` |
+| `integration:` | 境界クラス越しの結合（ファイル I/O・複数モジュール連携） | `integration: tests/test_game_log.py::test_jsonl_roundtrip` |
+
+プレフィックスはテスト docstring の `Level:` と一致させる。Mock の可否は `tests/TestStrategy.md` の Mock-Policy（境界クラスの docstring マーカー）に従う。
+
+### contract テスト不可の典型例（理由と代替手段の書き方）
+
+| AC のパターン | 不可の理由 | 代替の担保手段 |
+|---|---|---|
+| LLM の実応答品質に依存する AC（「自然な発言が生成される」「役職に沿った推理をする」等） | LLM 出力は非決定的で、テストはモック境界（Claude API クライアント）までしか縛れない | プロンプト構築と出力パースを unit で縛り、応答品質は実ゲーム実行の目視確認 |
+| 実ゲーム全体の長時間実行を要する AC | e2e はコスト・非決定性が高く CI に置けない | フェーズ単位の integration テスト＋手動の実ゲーム実行で確認 |
+
+---
+
 ## Phase 5 更新するドキュメント
 
 - `doc/Spec.md` — 機能要件の変更があれば更新

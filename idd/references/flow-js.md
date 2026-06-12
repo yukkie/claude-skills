@@ -29,6 +29,35 @@ HTML のルート要素・主要コンテナ・インタラクティブ要素を
 
 ---
 
+## Phase 4 AC ↔ Contract テスト対応（JS 固有）
+
+### 識別子の記法と種別プレフィックス
+
+識別子は `it()` の第1引数文字列を**そのまま**書く（実装時に一字一句このまま使う）。種別プレフィックス:
+
+| プレフィックス | 対象 | 例 |
+|---|---|---|
+| `pure:` | `lib/` の純粋関数（vitest unit） | `pure: filterByAgents: 空選択は全件返す` |
+| `統合:` | コンポーネント render + userEvent での UI 配線（state → 描画 → イベント） | `統合: SpectatorScreen: 参加者チップ2つを選択するとフィードが2人の発言に絞られる` |
+
+判断基準: 契約がデータ変換にあるなら `pure:`（安く強い）、契約が「操作で画面がこう変わる」という配線にあるなら `統合:`。**両方に契約があるなら両方書く**（pure だけで UI 配線を未検証にしない・統合だけで境界ケースの網羅を雑にしない）。
+
+### contract テスト不可の典型例（理由と代替手段の書き方）
+
+| AC のパターン | 不可の理由 | 代替の担保手段 |
+|---|---|---|
+| 「実アーカイブ（`sessionId` あり）で正しく動作する」 | fetch I/O はテストではモック境界（`fetchReplayLog` / `fetchGameBySessionId` 等）までしか縛れない | アーカイブと同形状のイベントを使う統合テストで間接担保＋Phase 6 必須ゲートの Playwright 目視（実 `state_archive`） |
+| 見た目・スタイルの契約（色・レイアウト・ハイライトの見え方） | jsdom は計算済みスタイルを評価しない | クラス/属性（`aria-pressed`・`data-variant` 等）の付与までをテストで縛り、見え方は Playwright 目視 |
+| ドキュメント記述のみの AC（表記統一・doc 更新） | ランタイム挙動を持たない | PR レビューで grep 結果ゼロ件を確認（例: `grep -n "thought" doc/FrontendDesign.md`） |
+
+### テスト観点・実装ヒント欄に書く jsdom 制約の例
+
+- `<details>` は閉じていても中身が DOM に存在する — テキストの可視性ではなく `open` プロパティを assert する
+- jsdom は summary クリックの自動トグルが不安定 — `el.open = false; fireEvent(el, new Event('toggle'))` で `onToggle` を発火させる
+- CSS Modules のクラス名はハッシュ化される — `styles.xxx` を import して `classList.contains` で照合するか、`aria-*` / `data-*` 属性で探す（「DOM 要素の探し方」の禁止事項と同根）
+
+---
+
 ## Phase 5 更新するドキュメント
 
 - `doc/Spec.md` — 機能要件の変更があれば更新
