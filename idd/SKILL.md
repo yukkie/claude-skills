@@ -438,27 +438,6 @@ Objective: このテストが何を検証するかを1文で記述する
 
 **→ 言語別 references の「Phase 6 実装後チェック」**に従い、リント・テスト・カバレッジ計測を実行する（JS はさらに Playwright によるブラウザ動作確認が必須ゲート）。エラーがあれば修正してから次へ進む。
 
-#### ブラウザ確認が環境制約で実行不能な場合
-
-Playwright / Browser によるブラウザ動作確認が、リモート環境・localhost 接続・ブラウザ拡張・権限などの**環境制約**で安定して実行できない場合は、無理に通そうとして時間を溶かさない。以下を満たす場合に限り、ブラウザ確認をスキップしてよい:
-
-1. unit / integration / contract テスト、ビルド、カバレッジなど、ブラウザ以外で確認可能なゲートは通っている
-2. スキップ理由が「環境制約」であり、実装都合や未検証の言い訳ではない
-3. PR の Test plan に以下を明記する
-   - ブラウザ確認をスキップした理由
-   - 本来 Playwright / Browser で確認する予定だった具体的な操作項目
-   - 代替で通したテスト・ビルド・カバレッジ
-
-書き方の例:
-
-```
-- [ ] Playwright skipped due remote/localhost instability. Intended checks:
-  - Open a real `/game/{sessionId}` archive.
-  - Confirm all participant chips are visible.
-  - Select/deselect chips and confirm feed filtering updates.
-  - Confirm system rows without `agent` remain visible.
-```
-
 #### カバレッジ確認結果（共通の必須ゲート）
 
 追加した実装行に対してテストが存在するか確認する。カバーできていない行がある場合:
