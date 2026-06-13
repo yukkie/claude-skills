@@ -478,6 +478,27 @@ git commit -m "{コミットメッセージ}"
 コミットメッセージの形式: `{type}: {変更内容の要約} (closes #{番号})`
 例: `feat: add pre-night judgment phase for day 2+ (closes #21)`
 
+コミットメッセージの末尾に Co-authored-by タグを付ける。**実行しているモデル・ツールに合わせて**記述する（Claude Code か CODEX か、どのモデルかを正確に書く）:
+
+```
+# Claude Code（Anthropic）で実装した場合の例:
+Co-Authored-By: Claude Sonnet 4.6 (1M context) <noreply@anthropic.com>
+Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
+# CODEX（OpenAI）で実装した場合の例:
+Co-Authored-By: OpenAI Codex <noreply@openai.com>
+```
+
+PR 本文末尾の `🤖 Generated with` 行も同様に実行環境に合わせて書く:
+
+```
+# Claude Code の場合:
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+# CODEX の場合:
+🤖 Generated with [OpenAI Codex](https://openai.com/codex)
+```
+
 ---
 
 ## Phase 7 — PR 作成
