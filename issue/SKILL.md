@@ -1,9 +1,9 @@
 ---
 name: issue
 description: >
-  GitHub Issue 生成スキル for AgentVillage。個別の Issue を作る・直す・取り込むフェーズ専用（実装フローには入らない）。
-  Use this skill when the user wants to create a new GitHub Issue, revise an existing Issue's requirements, or import raw idea notes — or invokes "/issue", "/issue create", "/issue revise <number>", "/issue import <file>", or says "Issue を作りたい", "このIssueを最新化して", "メモをIdeas.mdに取り込んで" など。
-  Subcommands: "issue create" gathers requirements conversationally and creates a GitHub Issue; "issue revise <number>" reconciles an existing Issue with the current state and proposes a body update; "issue import <file>" imports raw markdown notes into doc/Ideas.md without creating Issues.
+  GitHub Issue 生成スキル for AgentVillage。個別の Issue を作る・直す・分割する・取り込むフェーズ専用（実装フローには入らない）。
+  Use this skill when the user wants to create a new GitHub Issue, revise an existing Issue's requirements, split an Issue into multiple, or import raw idea notes — or invokes "/issue", "/issue create", "/issue revise <number>", "/issue split <number>", "/issue import <file>", or says "Issue を作りたい", "このIssueを最新化して", "このIssueを分割して", "メモをIdeas.mdに取り込んで" など。
+  Subcommands: "issue create" gathers requirements conversationally and creates a GitHub Issue; "issue revise <number>" reconciles an existing Issue with the current state and proposes a body update; "issue split <number>" splits one Issue into multiple and re-wires dependencies in both directions; "issue import <file>" imports raw markdown notes into doc/Ideas.md without creating Issues.
   実装に着手したくなったら本スキルではなく `/idd <番号>`（実装フロー）へ案内する。バックログ全体の棚卸し・優先度づけは `/backlog` を使う。
 ---
 
@@ -20,13 +20,14 @@ Issue 間に依存が生じるとき、その依存を**依存する側の Issue
 
 この横断ルールは `issue create`（分割・フォローアップの新規起票）と `issue revise`（既存 Issue 群の点検）の両方で適用する。
 
-書き戻す内容は次の3点:
+書き戻す内容は次の4点:
 
 1. **依存元リンク**: 依存する側の Issue の本文冒頭に `依存: #NN（{部品名・成果物名／元作業の内容}）` を書く。依存先（共通部品の producer Issue／フォローアップ元の Issue・PR）への参照リンクを必ず張る。
 2. **Requirement への利用義務・前提**: Requirement に依存内容を1行加える。分割 consumer なら「`#NN` で作る {部品名} を使う（独自再実装しない）」、フォローアップなら「`#NN` / PR #MM で入れた {対象} を前提に {積み残し・修正} を行う」。
 3. **AC への検証条件**: 可能なら AC にも検証条件を加える（「{部品名} を用いて実装されている」「{元作業}の {挙動} を壊さない」等）。AC は実装の検証正本（SSOT）であり、依存はここに落として初めて担保される。
+4. **依存先側の逆リンク（双方向化）**: 依存**先**の Issue（producer・共通部品を作る側）の本文にも `依存される Issue: #NN, #MM` を書く。依存を片方向（依存元→依存先）でしか持たないと、**依存先 Issue を後で分割したとき「この分割で誰の依存リンクを張り替える必要があるか」を機械的に辿れない**（実例: #521 を #521+#526 に分割した際、#521 に依存していた #523 のフィードカード依存を #526 へ張り替え忘れ、#523 の本文・AC が「#521 で共通化したフィードカード」と誤ったまま残った）。逆リンクがあれば分割時に依存元をたどって張り替えられる。
 
-> **核心**: Issue を切り出すのは「作業を分ける」だけでなく「**依存を配線する**」こと。依存先 Issue 単独で完結させ、依存する側の本文に依存リンク・利用義務が現れなければ、実装者（人間・AI 問わず）は独自実装にドリフトしたり前提を見落とす（実例: #521 で `AgentRosterRow` を共通化したが、それを使う #522 / #523 の本文・AC に依存も利用義務も書かず、#522 実装時に左ペインを独自マークアップで再実装してしまった。レビューで初めて発覚し作り直した）。フォローアップ Issue も同様で、元 Issue・PR へのリンクと前提を書かないと、後から読む人・別セッションが文脈を辿れない。
+> **核心**: Issue を切り出すのは「作業を分ける」だけでなく「**依存を双方向に配線する**」こと。依存先 Issue 単独で完結させ、依存する側の本文に依存リンク・利用義務が現れなければ、実装者（人間・AI 問わず）は独自実装にドリフトしたり前提を見落とす（実例: #521 で `AgentRosterRow` を共通化したが、それを使う #522 / #523 の本文・AC に依存も利用義務も書かず、#522 実装時に左ペインを独自マークアップで再実装してしまった。レビューで初めて発覚し作り直した）。フォローアップ Issue も同様で、元 Issue・PR へのリンクと前提を書かないと、後から読む人・別セッションが文脈を辿れない。そして逆リンク（依存先→依存元）を欠くと、依存先を分割したときに依存元の張り替えが漏れる。**分割は `issue split` サブコマンドで行い、依存の張り替えを手順として担保する。**
 
 ## サブコマンド: `issue create`
 
@@ -290,6 +291,83 @@ mcp__plugin_github_github__create_pull_request(
 > Ideas.md 同期 PR の本文・コミットには `Closes #XX` を**書かない**（自動クローズ防止）。
 
 更新内容を表示して完了。**ここで終了する**（実装フローには進まない。実装するなら `/idd {番号}`）。
+
+---
+
+## サブコマンド: `issue split <番号>`
+
+引数の先頭語が `split` の場合はこのフローへ進む。続く引数は分割対象 Issue の番号。
+
+### 目的
+1つの Issue を複数の子 Issue に分割し、**依存を双方向に再配線する**。単に子 Issue を作るだけでなく、**分割対象に依存していた既存 Issue の依存リンク（依存先・Requirement・AC）を、分割後のどの子 Issue へ張り替えるか**まで担保するのがこのサブコマンドの核心。これを手順化しないと、分割で中身が別 Issue へ移ったときに依存元の張り替えが漏れる（実例: #521 を #521+#526 に分割した際、#521 に依存していた #523 のフィードカード依存を #526 へ張り替え忘れ、#523 が「#521 で共通化したフィードカード」と誤参照したまま残った）。
+
+このサブコマンドは **Issue の整備専用**。分割案 → 依存再配線 → 子 Issue 反映 → 依存元 revise → Ideas.md 同期で完結し、**実装フローには進まない**。
+
+### フロー
+
+```
+[SP-1] 分割対象 + その依存元 Issue 群を読む（依存の逆引き）
+[SP-2] 分割案を提示（子 Issue への Requirement / AC 振り分け）  ← 確認
+[SP-3] 依存の再配線案を提示（子 Issue 間 + 依存元の張り替え）  ← 確認
+[SP-4] 子 Issue 作成/更新 + 依存元 Issue の revise + Ideas.md 同期
+```
+
+#### SP-1 分割対象 + 依存元の逆引き
+
+- 分割対象 Issue の本文 + 全コメントを読む（`issue_read` の `get` / `get_comments`）。
+- **依存元の逆引き（最重要）**: この Issue に依存している Issue を全列挙する。
+  - まず本文の「依存される Issue: #NN」逆リンク（横断ルールで張られていれば）を辿る。
+  - 逆リンクが無い／信頼できない場合は、`mcp__plugin_github_github__search_issues` 等で `#{番号}` を本文・コメントに含む Issue を検索し、この Issue を依存先として参照している Issue を拾う。
+  - 各依存元が「この Issue の**何に**依存しているか」（どの成果物・どの AC）を特定する。分割でその成果物がどの子に移るかを次フェーズで決めるため。
+
+#### SP-2 分割案を提示
+
+分割対象の Requirement / AC を、子 Issue へどう振り分けるかを提示する。**この時点では Issue を作成・編集しない**:
+
+```
+## issue split: Issue #{番号} 分割案
+
+### 子 Issue {N} 個への振り分け
+- **子A（{タイトル案}）**: {担当する Requirement / AC}
+- **子B（{タイトル案}）**: {担当する Requirement / AC}
+
+### 分割の軸
+{producer/consumer・言語・レイヤなど、なぜこの切り方か}
+
+この分割でよいですか？ [y/N / 修正コメント]
+```
+
+> 分割の軸は AI が勝手に1案に決めず、複数案がありうるなら提示してユーザーに委ねる（`/idd` の事前調査・分割提案と同じ原則）。
+
+#### SP-3 依存の再配線案を提示
+
+SP-1 で洗い出した依存元それぞれについて、**分割後どの子 Issue を指すべきか**の張り替え案を提示する。横断ルールの4点（依存元リンク・Requirement・AC・逆リンク）に沿う:
+
+```
+## issue split: 依存の再配線案
+
+### 子 Issue 間の依存
+- {子B} は {子A} の {成果物} に依存 → 子B に `依存: {子A}`、子A に `依存される Issue: {子B}`
+
+### 依存元 Issue の張り替え（既存 Issue の revise）
+| 依存元 | 現状の依存リンク | 張り替え後 | 直す箇所 |
+|---|---|---|---|
+| #523 | 依存: #521（フィードカード） | 依存: #526（フィードカード） | 本文・Requirement・AC-5 |
+
+この再配線でよいですか？ [y/N / 修正コメント]
+```
+
+> **漏らさない**: SP-1 で挙げた依存元が表に1行も漏れなく載っているか確認する。「この依存元はこの分割の影響を受けない」と判断したものも、影響なしと明記する（黙って落とさない）。
+
+#### SP-4 反映
+
+承認後、順に実行する:
+
+1. **子 Issue の作成/更新**: 分割で新設する子は `issue create` の C-3（`issue_write` method=create + Ideas.md 追記 PR）に従う。元 Issue を子の1つとして残す場合は `issue_write` method=update で Requirement/AC を分割後の内容へ更新する。子 Issue 間の依存（双方向リンク）を本文に書く。
+2. **依存元 Issue の revise**: SP-3 の張り替え表に従い、各依存元 Issue を `issue_write` method=update で更新する（依存リンク・Requirement・AC を分割後の子 Issue へ向け直す）。
+3. **Ideas.md 同期**: 新設・タイトル変更があれば `docs/split-issue-{番号}` ブランチで Ideas.md を更新し PR を作成する（`Closes #XX` は書かない）。
+
+完了後、作成/更新した Issue 番号と張り替えた依存元を一覧表示する。**ここで終了する**（実装するなら `/idd {番号}`）。
 
 ---
 
