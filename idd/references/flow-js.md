@@ -129,10 +129,11 @@ Objective: このテストが何を検証するかを1文で記述する
 ```bash
 npm test          # vitest run
 npm run test:coverage
+npm run lint      # ESLint（JS/JSX 構文・react-hooks ルール）
 npm run lint:css  # design lint（stylelint）。#557 で導入された軽量ゲート
 ```
 
-エラーがあれば修正してから次へ。`lint:css` は CSS の生値ハードコード・トークン外の値を検出する（`doc/FrontendDesign.md` §7.5）。現状 severity は `warning` のため失敗扱いにはならないが、新規追加したCSSに警告が出た場合はトークン参照に直してから次へ進む。
+エラーがあれば修正してから次へ。`lint` は ESLint（`eslint.config.js`、flat config）で、未使用変数・`react-hooks/rules-of-hooks` 等の severity は `error`。`lint:css` は CSS の生値ハードコード・トークン外の値を検出する（`doc/FrontendDesign.md` §7.5）。現状 severity は `warning` のため失敗扱いにはならないが、新規追加したCSSに警告が出た場合はトークン参照に直してから次へ進む。
 
 ### Playwright によるブラウザ動作確認（必須ゲート）
 
