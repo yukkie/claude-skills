@@ -1,0 +1,30 @@
+{
+  "skill_name": "idd-team",
+  "note": "All evals run in DRY-RUN mode: the orchestrator must plan the multi-agent flow (roles, hand-offs, what each subagent is told, which gates go to the user) WITHOUT actually spawning subagents, creating branches, posting Issue comments, or opening PRs. We evaluate the quality of the orchestration design, not real side effects.",
+  "evals": [
+    {
+      "id": 0,
+      "name": "simple-bug-fix-design-skip",
+      "prompt": "/idd-team 305 を、ドライランで進めてほしい。実際にはサブエージェントを spawn せず、ブランチも切らず、Issue コメントも投稿せず、PR も作らないこと。代わりに『このスキルに従うとオーケストレータとして何をするか』の計画を最後まで提示して。具体的には、各フェーズで誰（オーケストレータ/設計担当/実装担当）が何をするか、設計担当・実装担当のサブエージェントに渡すプロンプトの中身、どのゲートでユーザーに上げるか、検収で何を見るか、を順番に書き出してほしい。#305 は『fix: include claimed_role in wolf prompts to prevent role-flip CO』という小さめの bug Issue。",
+      "expected_output": "Phase2後の[S]設計スキップ判定で、#305は『設計変更を伴わないバグ修正』に該当し除外条件(中心契約型/横断/独立項目複数/refactor)に非該当と判定し、理由を説明してユーザー承認を求める。承認されれば設計担当をspawnせず実装担当へ直行(設計コメント無し→Issue本文のACを仕様正本、軽量Issueと明記)。実装担当でも事前調査軽量版とAC照合は省かない。[R2]検収+AC/カバレッジ承認ゲート→PR作成ゲート。bugfix/ブランチ。副作用ゼロ。",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 1,
+      "name": "cross-cutting-design-issue-prereq-investigation",
+      "prompt": "/idd-team 466 をドライランで。実行・spawn・コミット・PRは一切せず、オーケストレーション計画だけ最後まで出して。#466 は『Refactor LogEvent payload design』で、LogEvent という中心契約型の payload 設計を top-level optional / extra_data / discriminated union のどれにするか比較検討する設計寄りの Issue。設計担当に何をどこまでやらせるか、producer/consumer の全列挙や grep が届かない境界の扱いをどう指示するか、設計上の判断ポイントをどうユーザーに上げるか、を特に詳しく。",
+      "expected_output": "設計Issue/横断的変更なので設計担当のプロンプトに『事前調査(producer/consumer全列挙・同種ハック探索・grepが届かない別リポジトリ境界=iddスキル定義への言及)』を必須化。3案比較は決め打ちさせず判断ポイントとしてIssueコメントに残させ、[R1]でオーケストレータが『全列挙されているか/AC全項目転記/ドリフトしていないか』を検収してからユーザーに3案を提示。設計中心Issueなので実装担当spawnは設計承認後。",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 2,
+      "name": "design-comment-handoff-and-cold-start",
+      "prompt": "idd-team で Issue を実装するとき、設計担当が決めたことを実装担当にどう渡すの？サブエージェントって会話の続きを覚えてないよね。具体的にどういう仕組みで流れが切れないようにしてるのか、ドライランで #312（GameData registry）を例にして説明して。実際には何も実行しないで、受け渡しの仕組みと、もし設計コメントが粗かったらどうなるかも含めて。",
+      "expected_output": "設計担当は設計をIssueコメント(『# [idd-team 設計案] #312』見出し付き)に外部化→実装担当spawn時に『承認済み設計コメントのURL』を唯一の設計仕様正本として渡す。コールドスタート前提でIssue番号/ブランチ名/コメントURL/読むファイルパスを毎回明示。設計コメントが粗いと実装担当が手戻り→[R2]検収で乖離検出→再spawn。最終メッセージだけでは消えるのでコメント必須の理由に言及。",
+      "files": [],
+      "assertions": []
+    }
+  ]
+}
